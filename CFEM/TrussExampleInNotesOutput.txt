@@ -1,0 +1,36 @@
+Nodes
+nNodes	3
+id	crd
+values
+forces
+position(verbose)
+prescribed_boolean(verbose)
+0	0	0
+0.01	0	
+-100.035	100.035	0	1	
+1	1	
+1	2	0
+0	0	
+0	0	0	2	
+0	1	
+2	1	1
+2.85355	0	
+2.5	0	1	2	
+0	0	
+Elements
+ne	3
+id ElementType
+forces(verbose)
+specific output
+3	3
+100.535	-100.535	-100.535	0	
+142.178
+
+3	3
+-403.553	403.553	-403.553	0	
+-570.711
+
+3	3
+-0.5	0.5	0	0	
+-0.5
+

@@ -1,0 +1,20 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual C++ Express 2008
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CFEM", "CFEM\CFEM.vcproj", "{581A0788-A02B-4E17-92C6-F51D7F88D8C3}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{581A0788-A02B-4E17-92C6-F51D7F88D8C3}.Debug|Win32.ActiveCfg = Debug|Win32
+		{581A0788-A02B-4E17-92C6-F51D7F88D8C3}.Debug|Win32.Build.0 = Debug|Win32
+		{581A0788-A02B-4E17-92C6-F51D7F88D8C3}.Release|Win32.ActiveCfg = Release|Win32
+		{581A0788-A02B-4E17-92C6-F51D7F88D8C3}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

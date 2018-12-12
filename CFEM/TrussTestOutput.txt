@@ -1,0 +1,31 @@
+Nodes
+nNodes	3
+id	crd
+values
+forces
+0	1.6	1.2
+-1.#IND	-1.#INF	
+0	-1	
+1	0	0
+0	0.375	
+-1.#IND	0	
+2	0	2.8
+0.5	0	
+-1.#IND	-1.#IND	
+Elements
+ne	3
+id ElementType
+forces(verbose)
+specific output
+3	3
+
+-0.133929
+
+3	3
+
+-1.#IND
+
+3	3
+
+-1.#IND
+
