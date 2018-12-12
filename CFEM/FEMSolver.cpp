@@ -5,7 +5,7 @@
 #include "PhyGlobal.h"
 #include "CFEMTypes_Global.h"
 
-
+//Editing Test - Vincent
 // in C++ do not write friend again (similar to virtual)
 void FEMSolver::Input(istream& in)
 {
@@ -39,7 +39,7 @@ void FEMSolver::Input(istream& in)
 		in >> pe->matID;		// longer way which was fine: in >> pes[i]->matID;
 								// another way not recommended (*pe).matID
 								// ptr			*ptr	object
-								// object		&object	address of the object
+							// object		&object	address of the object
 		
 		int nNodeInElement;
 		in >> nNodeInElement;
