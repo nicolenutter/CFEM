@@ -7,7 +7,7 @@ void PhyElementFrame::setInternalMaterialProperties(PhyMaterial* pMat)
 	E = pMat->paras(mpb_E);
 	A = pMat->paras(mpb_A);
 	I = pMat->paras(mpb_I);
-//	eType = 4 Frame matfeng = [E A I] (454d)
+	//	eType = 4 Frame matfeng = [E A I] (454d)
 }
 
 void PhyElementFrame::setGeometry()
@@ -74,7 +74,7 @@ void PhyElementFrame::Calculate_ElementStiffness_Force()
 
 	ke.resize(6, 6); //CC
 	ke = 0.0; //CC
-	
+
 	//ke = TT*kLocalCoordinate*T 
 	for (int I = 0; I < 6; ++I) //CC
 	{
@@ -93,5 +93,26 @@ void PhyElementFrame::Calculate_ElementStiffness_Force()
 
 void PhyElementFrame::SpecificOutput(ostream& out) const
 {
-	// Complete for T, y, theta, M & V
+	// T = k * q
+	out << T; 
+	// equations used
+	// y(eta) = n1(eta)*1e + n2(eta)*a2e + n3(eta)*a3e + n4(eta)*a4e
+	// theta(eta) = dn1/deta(eta)*a1+dn2/deta(eta)*a2 dn3/deta(eta)*a3 + dn4/deta(eta)*a4 -> dy/deta
+	// M(eta) = E*I(b1(eta)*a1 + b2(eta)*a2 + b3(eta)*a3 + b4(eta)*a4 -> d2y/deta2
+	// V(eta) = E*I(db1/deta(eta)*a1 + db2/deta(eta)*a2 + db3/deta(eta)*a3 + db4/deta(eta)*a4 -> d3y/deta3
+	// n1e = 1/4(2 - 3*eta + eta^3)                        b1e = 6*eta/Le^2
+	// n2e = Le/8(1 - eta - eta^2 + eta^3)                 b2e = (-1 + 3*eta)/Le 
+	// n3e = 1/4(2 + 3*eta - eta^3)                        b3e = -6*eta/Le^2
+	// n4e = Le/8(-1 - eta + eta^2 + eta^3)                b4e = (1+3*eta)/Le
+	double eta;
+	// Is eta supposed to be half the length or a combo of c and s or something else entirely?
+	double y = 1/4*(2-3*eta+pow(eta, 3))*edofs(0) + L/8*(1-eta-pow(eta,2)+pow(eta,3))*edofs(1) + 1/4*(2+3*eta-pow(eta,3))*edofs(2) + L/8*(-1-eta+pow(eta,2)+pow(eta,3))*edofs(3);
+	out << y;
+	// Should we do it this way (chain rule) or implement a finite difference or some other method for deriving?
+	double theta = 3/(2*L)*(1+pow(eta,2))*edofs(0) + 1/4*(1-2*eta+3*pow(eta,2))*edofs(1) + 3/(2*L)*(1-pow(eta,2))*edofs(2) + 1/4*(-1+2*eta+3*pow(eta,2))*edofs(3);
+	out << theta;
+	double M = E*I*(6*eta/pow(L,2)*edofs(0) + (-1+3*eta)/L*edofs(1) - 6*eta/pow(L,2)*edofs(2) + (1+3*eta)/L*edofs(3));
+	out << M;
+	double V = E*I*(12/pow(L,3)*edofs(0) + 6/pow(L,2)*edofs(1) - 12/pow(L,3)*edofs(2) + 6/pow(L,2)*edofs(3));
+	out << V;
 }
