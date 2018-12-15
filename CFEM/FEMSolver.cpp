@@ -4,21 +4,59 @@
 #include "LAFuncs.h"
 #include "PhyGlobal.h"
 #include "CFEMTypes_Global.h"
+#include "PhyNode.h"
 
 //Editing Test - Vincent
 // in C++ do not write friend again (similar to virtual)
 void FEMSolver::Input(istream& in)
 {
-	// READING Nodes, ... OMITTED
-	// ....
-	// ....
-	// ....
+	int tmpi;
+	long double tmpd;	// CC ->
+	
+	in.ignore(INT_MAX,' ');
+	in >> tmpi; 
+	dim = tmpi;
+	in.ignore(INT_MAX, '\n');
+	in.ignore(INT_MAX, ' ');
+	in >> tmpi;
+	ndofpn = tmpi;
+	in.ignore(INT_MAX, '\n');
+	in.ignore(INT_MAX, '\n');
+	in.ignore(INT_MAX, ' ');
+	in >> tmpi;
+	nNodes = tmpi;
+	in.ignore(INT_MAX, '\n');
+	in.ignore(INT_MAX, '\n');
+	
+	for (int i = 0; i < nNodes; ++i)
+	{	
+		in >> tmpi;
+		nodes[i].id = tmpi;
+		if (tmpi != (i + 1))
+		{
+			THROW("incorrect id");
+		}
+		nodes[i].coordinate.resize(dim);
+		for (int J = 0; J < dim; ++J)
+		{
+			in.ignore(INT_MAX, ' ');
+			in >> tmpd;
+			nodes[i].coordinate(J) = tmpd;
+		}
+		in.ignore(INT_MAX, '\n');
+	}
+	
+	in.ignore(INT_MAX, '\n');
+	in.ignore(INT_MAX, ' ');
+	in >> tmpi;
+	ne = tmpi;
+	in.ignore(INT_MAX, '\n');
+	in.ignore(INT_MAX, '\n'); // <- CC
+	
 	ElementType eType;
 	int matID;
 	int nNodeInElement;
 	PhyElement* pe;
-	int tmpi;
-
 	for (int i = 0; i < ne; ++i)
 	{
 		in >> tmpi;
@@ -53,10 +91,61 @@ void FEMSolver::Input(istream& in)
 		}
 		pe->setNodeConnectivity_Sizes(nNodeInElement, ndofpn, eNodesTmp, eNodePtrsTmp); 
 	}
-	// Reading the rest of the file. 
-	//....
-	//....
-	//....
+
+	in.ignore(INT_MAX, '\n');
+	in.ignore(INT_MAX, '\n');
+	in.ignore(INT_MAX, ' ');
+	in >> tmpi;
+	np = tmpi;
+	in.ignore(INT_MAX, '\n');
+	int tmp2i, tmp3i;
+	for (int i = 0; i < np; ++i)
+	{
+		in.ignore(INT_MAX, '\n');
+		in >> tmpi;
+		in.ignore(INT_MAX, ' ');
+		in >> tmp2i;
+		in.ignore(INT_MAX, ' ');
+		in >> tmp3i;
+		nodes[tmpi].ndof[tmp2i].p = true; //Set prescribed dof & value
+		nodes[tmpi].ndof[tmp2i].v = tmp3i;
+		
+	}
+	in.ignore(INT_MAX, '\n');
+	in.ignore(INT_MAX, '\n');
+	in.ignore(INT_MAX, ' ');
+	in >> tmpi;
+	in.ignore(INT_MAX, '\n');
+	for (int i = 0; i < nf; ++i)
+	{
+		in.ignore(INT_MAX, '\n');
+		in >> tmpi;
+		in.ignore(INT_MAX, ' ');
+		in >> tmp2i;
+		in.ignore(INT_MAX, ' ');
+		in >> tmp3i;
+		nodes[tmpi].ndof[tmp2i].f = tmp3i; //Set force on Free DOF
+	}
+	in.ignore(INT_MAX, '\n');
+	in.ignore(INT_MAX, '\n');
+	in.ignore(INT_MAX, ' ');
+	in >> tmpi;
+	nmats = tmpi;
+	in.ignore(INT_MAX, '\n');
+	for (int i = 0; i < nmats; ++i)
+	{
+		in.ignore(INT_MAX, '\n');
+		in >> tmpi;
+		in.ignore(INT_MAX, ' ');
+		in >> tmp2i;
+		for (int j = 0; j < tmp2i; ++j)
+		{
+			in.ignore(INT_MAX, ' ');
+			in >> tmp3i;
+			mats[tmpi].paras(j) = tmp3i; //Set Mat Props
+		}
+	}
+
 	for (int e = 0; e < ne; ++e)
 	{
 		pe = pes[e];
@@ -86,8 +175,8 @@ ostream& operator<<(ostream& out, const FEMSolver& dat)
 	}
 	for (int node = 0; node < dat.nNodes; ++node)
 		out << dat.nodes[node] << '\n';
-
-	// Complete the function
+	for (int element = 0; element < dat.ne; ++element) //CC
+		out << (*dat.pes[element]) << '\n';
 	return out;
 }
 
