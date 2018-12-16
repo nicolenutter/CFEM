@@ -46,7 +46,6 @@ void PhyElementTruss::Calculate_ElementStiffness_Force()
 		} //CC <- Ref R. Abedi ME517_20150417_x264.mp4
 	}
 }
-}
 
 void PhyElementTruss::SpecificOutput(ostream& out) const
 {
