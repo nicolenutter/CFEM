@@ -3,6 +3,11 @@
 #include "FEMSolver.h"
 #include "TestSuites.h"
 
+// Term Project 2 - ME517
+// Dr. Abedi
+// Vincent Boyd, Cameron Craig, and Nicole Nutter
+// 12/16/18
+
 // any C++ project REQUIRES ONE main FUNCTION that returns integer
 int main()
 {

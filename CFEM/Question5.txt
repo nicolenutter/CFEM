@@ -1,0 +1,2 @@
+Response to deliverable 5
+We do not. Axial and lateral loading of a frame is nonlinearly coupled. Additionally, if axial load is tensile, results from beam elements are higher and if axial load is compressive, results from beam elements are lower.

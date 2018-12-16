@@ -155,7 +155,7 @@ int LUsolve(MATRIX &K, VECTOR &F)
     m = K.rows();
     n = K.columns();
     MATRIX LU_(m, n);
-	LU_ = K;	// CHECK: can we just get along with referencing? It seems to be the case, then we save some mempory copy here
+	LU_ = K;	//Complete CHECK: can we just get along with referencing? It seems to be the case, then we save some mempory copy here
 //    MATRIX LU_(K); // refernce option
 
     int i=0;

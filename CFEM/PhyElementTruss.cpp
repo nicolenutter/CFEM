@@ -15,6 +15,7 @@ void PhyElementTruss::setGeometry()
 	crd0 = &eNodePtrs[0]->coordinate;
 
 	int sz = crd1->size();
+	if (sz != 2)
 	{
 		THROW("implementation only for 2D truss");
 	}
