@@ -258,9 +258,24 @@ void FEMSolver::setSizes()
 	F=0.0;
 }
 
-void FEMSolver::setPositions_F()
+void FEMSolver::setPositions_F()  
 {
-	// Complete
+	int posf=0;
+	int posp=0;
+	for (int i=0; i<nNodes; i++)
+	{
+		for (int j=0; j<ndof; j++)
+		{	if (nodes[i].ndof[j].p==true)
+			{	posp = posp-1;
+				nodes[i].ndof[j].pos=posp;
+			}
+		 	else
+				{	posf=posf+1;
+				 	nodes[i].ndof[j].pos=posf;
+				 	F(posn)=nodes[i].ndof[j].f;	//These are the free DOF forces...not sure if F(posn) is correct
+				}
+		}
+	}
 	
 }
 
