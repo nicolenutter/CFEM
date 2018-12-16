@@ -93,12 +93,9 @@ void PhyElementFrame::Calculate_ElementStiffness_Force()
 
 void PhyElementFrame::SpecificOutput(ostream& out) const
 {
-	// T = k * q
-	// I'm still struggling with how to calculate the axial force of a frame, just in general, I can understand it needs c and s... but that's about it, I want to just give it the equation from the truss but I feel like that's missing materials
-
+	double T = A * E / L * (c * (edofs(3) - edofs(0)) + s * (edofs(4) - edofs(1)));
 	out << T; 
 
-	// Here is an improvement where I tried to initialize eta and y, M, theta, and V as vectors since the std::array option seemed to not work for some reason, might just be me
 	VECTOR eta;
 	eta(0) = 0;
 	eta(1) = L / 4;
@@ -106,21 +103,24 @@ void PhyElementFrame::SpecificOutput(ostream& out) const
 	eta(3) = 3 * L / 4;
 	eta(4) = L;
 
-	// I kept the same equations but looped through to get values eta at all five points, sorry I had not understood that he meant this value was needed for five points when we met earlier in the week
 	VECTOR y, theta, M, V;
+	// takes care of the calculating the value and outputting
 	for (int jj = 0; jj < 5; ++jj)
 	{
-		y(jj) = 1/4*(2-3*eta(jj)+pow(eta(jj),3))*edofs(0) + L/8*(1-eta(jj)-pow(eta(jj),2)+pow(eta(jj),3))*edofs(1) + 1/4*(2+3*eta(jj)-pow(eta(jj),3))*edofs(2) + L/8*(-1-eta(jj)+pow(eta(jj),2)+pow(eta(jj),3))*edofs(3);
-		theta(jj) = 3/(2*L)*(1+pow(eta(jj),2))*edofs(0) + 1/4*(1-2*eta(jj)+3*pow(eta(jj),2))*edofs(1) + 3/(2*L)*(1-pow(eta(jj),2))*edofs(2) + 1/4*(-1+2*eta(jj)+3*pow(eta(jj),2))*edofs(3);
-		M(jj) = E*I*(6*eta(jj)/pow(L,2)*edofs(0) + (-1+3*eta(jj))/L*edofs(1) - 6*eta(jj)/pow(L,2)*edofs(2) + (1+3*eta(jj))/L*edofs(3));
-		V(jj) = E*I*(12/pow(L,3)*edofs(0) + 6/pow(L,2)*edofs(1) - 12/pow(L,3)*edofs(2) + 6/pow(L,2)*edofs(3));		
+		y(jj) = 1/4*(2-3*eta(jj)+pow(eta(jj),3))*edofs(1) + L/8*(1-eta(jj)-pow(eta(jj),2)+pow(eta(jj),3))*edofs(2) + 1/4*(2+3*eta(jj)-pow(eta(jj),3))*edofs(4) + L/8*(-1-eta(jj)+pow(eta(jj),2)+pow(eta(jj),3))*edofs(5);
+		out << y(jj);
+		theta(jj) = 3/(2*L)*(1+pow(eta(jj),2))*edofs(1) + 1/4*(1-2*eta(jj)+3*pow(eta(jj),2))*edofs(2) + 3/(2*L)*(1-pow(eta(jj),2))*edofs(4) + 1/4*(-1+2*eta(jj)+3*pow(eta(jj),2))*edofs(5);
+		out << theta(jj);
+		M(jj) = E*I*(6*eta(jj)/pow(L,2)*edofs(1) + (-1+3*eta(jj))/L*edofs(2) - 6*eta(jj)/pow(L,2)*edofs(4) + (1+3*eta(jj))/L*edofs(5));
+		out << M(jj);
+		V(jj) = E*I*(12/pow(L,3)*edofs(1) + 6/pow(L,2)*edofs(2) - 12/pow(L,3)*edofs(4) + 6/pow(L,2)*edofs(5));	
+		out << V(jj);
 	}
-    out << y, theta, M, V;
 }
 
 
 
-
+// assumed edof(0) - 1x, edof(1) - 1y, edof(2) - 1rot, edof(3) - 2x, edof(4) - 2y, edof(5) - 2rot
 
 // equations used
 // y(eta) = n1(eta)*1e + n2(eta)*a2e + n3(eta)*a3e + n4(eta)*a4e
