@@ -40,7 +40,7 @@ void PhyNode::set_nndof(int nndofIn)
 
 void PhyNode::UpdateNodePrescribedDofForces(VECTOR& Fp)
 {
-	for (int ii=0; ii < nndof+1; ++ii)
+	for (int ii=0; ii < nndof; ++ii)
 		ndof[ii].v += Fp(ii);
 }
 
