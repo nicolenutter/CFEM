@@ -328,9 +328,21 @@ void FEMSolver::Assign_dof()
 			}
 		}
 	}
-	//Still requires the Phyelement step 8 to be carried out by completing SetElementDofMap_ae() before to loop over the element map
-	// and complete edof by using the displacement values for the non-prescribed dofs.
-}
+	/*Still requires the Phyelement step 8 to be carried out by completing SetElementDofMap_ae() before to loop over the element map
+	and complete edof by using the displacement values for the non-prescribed dofs.
+	
+	Pseudo Code, complete once PhyElement is completed
+	for (int e=0; e<ne; e++)
+	{	for (int i=0; i<element(e).nedof; i++)
+		{	posn = element(e)dofMap(i)
+			if (posn > 0)  //Free dof
+			{
+				element(e).edofs(i) = dofs(posn);
+			}
+		}
+	}
+	*/
+}	
 
 void FEMSolver::UpdateFpNodalPrescribedForces()
 {
