@@ -6,12 +6,11 @@
 #include "CFEMTypes_Global.h"
 #include "PhyNode.h"
 
-//Editing Test - Vincent
 // in C++ do not write friend again (similar to virtual)
 void FEMSolver::Input(istream& in)
 {
 	int tmpi;
-	long double tmpd;	// CC ->
+	long double tmpd;	
 	
 	in.ignore(INT_MAX,' ');
 	in >> tmpi; 
@@ -51,7 +50,7 @@ void FEMSolver::Input(istream& in)
 	in >> tmpi;
 	ne = tmpi;
 	in.ignore(INT_MAX, '\n');
-	in.ignore(INT_MAX, '\n'); // <- CC
+	in.ignore(INT_MAX, '\n'); 
 	
 	ElementType eType;
 	int matID;
@@ -124,6 +123,7 @@ void FEMSolver::Input(istream& in)
 		in >> tmp2i;
 		in.ignore(INT_MAX, ' ');
 		in >> tmp3i;
+		nodes[tmpi].ndof[tmp2i].p = false;  //set free dof boolean
 		nodes[tmpi].ndof[tmp2i].f = tmp3i; //Set force on Free DOF
 	}
 	in.ignore(INT_MAX, '\n');
@@ -175,7 +175,7 @@ ostream& operator<<(ostream& out, const FEMSolver& dat)
 	}
 	for (int node = 0; node < dat.nNodes; ++node)
 		out << dat.nodes[node] << '\n';
-	for (int element = 0; element < dat.ne; ++element) //CC
+	for (int element = 0; element < dat.ne; ++element) 
 		out << (*dat.pes[element]) << '\n';
 	return out;
 }
@@ -321,7 +321,15 @@ bool FEMSolver::Solve_Dofs()
 
 void FEMSolver::Assign_dof()
 {
-	//Complete
+	for(int i=0; i<nNodes; i++)
+	{	for (int j=0; j<ndofpn; j++)
+		{	if (nodes[i].ndof[j].p == false)
+			{	nodes[i].ndof[j].v = nodes[i].ndof[j].p;  //finishes the assignment of free DOF
+			}
+		}
+	}
+	//Still requires the Phyelement step 8 to be carried out by completing SetElementDofMap_ae() before to loop over the element map
+	// and complete edof by using the displacement values for the non-prescribed dofs.
 }
 
 void FEMSolver::UpdateFpNodalPrescribedForces()
