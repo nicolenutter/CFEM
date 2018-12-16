@@ -1,5 +1,6 @@
 #include "PhyElement.h"
 #include "PhyElementBar.h"
+#include "PhyElementFrame.h"
 #include "PhyElementTruss.h"
 #include "PhyNode.h"
 #include "PhyDof.h"
@@ -16,6 +17,9 @@ PhyElement* PhyElementFactory(ElementType eTypeIn)
 //		break;
 	case etBar:
 		pePtr = new PhyElementBar();
+		break;
+	case etFrame:
+		pePtr = new PhyElementFrame();
 		break;
 	case etTruss:
 		pePtr = new PhyElementTruss();
