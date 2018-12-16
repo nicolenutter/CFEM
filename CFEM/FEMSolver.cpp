@@ -11,7 +11,7 @@ void FEMSolver::Input(istream& in)
 {
 	int tmpi;
 	long double tmpd;	
-	
+
 	in.ignore(INT_MAX,' ');
 	in >> tmpi; 
 	dim = tmpi;
@@ -26,7 +26,7 @@ void FEMSolver::Input(istream& in)
 	nNodes = tmpi;
 	in.ignore(INT_MAX, '\n');
 	in.ignore(INT_MAX, '\n');
-	
+
 	for (int i = 0; i < nNodes; ++i)
 	{	
 		in >> tmpi;
@@ -44,14 +44,14 @@ void FEMSolver::Input(istream& in)
 		}
 		in.ignore(INT_MAX, '\n');
 	}
-	
+
 	in.ignore(INT_MAX, '\n');
 	in.ignore(INT_MAX, ' ');
 	in >> tmpi;
 	ne = tmpi;
 	in.ignore(INT_MAX, '\n');
 	in.ignore(INT_MAX, '\n'); 
-	
+
 	ElementType eType;
 	int matID;
 	int nNodeInElement;
@@ -76,17 +76,17 @@ void FEMSolver::Input(istream& in)
 		in >> pe->matID;		// longer way which was fine: in >> pes[i]->matID;
 								// another way not recommended (*pe).matID
 								// ptr			*ptr	object
-							// object		&object	address of the object
-		
+								// object		&object	address of the object
+
 		int nNodeInElement;
 		in >> nNodeInElement;
 		vector<int> eNodesTmp(nNodeInElement);
 		vector <PhyNode*> eNodePtrsTmp(nNodeInElement);
 		for (int j = 0; j < nNodeInElement; ++j)
 		{
-		 in >> eNodesTmp[j];
-		 --eNodesTmp[j];
-		 eNodePtrsTmp[j] = &nodes[eNodesTmp[j]]; // safe here because nodes size never is going to change. If not this causes a very nasty bug to fix ... 
+			in >> eNodesTmp[j];
+			--eNodesTmp[j];
+			eNodePtrsTmp[j] = &nodes[eNodesTmp[j]]; // safe here because nodes size never is going to change. If not this causes a very nasty bug to fix ... 
 		}
 		pe->setNodeConnectivity_Sizes(nNodeInElement, ndofpn, eNodesTmp, eNodePtrsTmp); 
 	}
@@ -108,7 +108,7 @@ void FEMSolver::Input(istream& in)
 		in >> tmp3i;
 		nodes[tmpi].ndof[tmp2i].p = true; //Set prescribed dof & value
 		nodes[tmpi].ndof[tmp2i].v = tmp3i;
-		
+
 	}
 	in.ignore(INT_MAX, '\n');
 	in.ignore(INT_MAX, '\n');
@@ -153,7 +153,7 @@ void FEMSolver::Input(istream& in)
 		matID = pe->matID;
 		pe->setInternalMaterialProperties(&mats[matID]);
 	}
-//	return in;
+	//	return in;
 }
 
 istream& operator>>(istream& input, FEMSolver& dat)
@@ -208,9 +208,9 @@ void FEMSolver::FEMSolve(string& runName, bool verboseIn)
 	// reading data
 	Input(in);
 	// can do it as
-//	in >> (*this);
+	//	in >> (*this);
 	in.close();
-	
+
 	/////////////////////////////////////////////////////////////////////////
 	// steps
 
@@ -266,17 +266,17 @@ void FEMSolver::setPositions_F()
 	{
 		for (int j=0; j<ndof; j++)
 		{	if (nodes[i].ndof[j].p==true)
-			{	posp = posp-1;
-				nodes[i].ndof[j].pos=posp;
-			}
-		 	else
-				{	posf=posf+1;
-				 	nodes[i].ndof[j].pos=posf;
-				 	F(posn)=nodes[i].ndof[j].f;	//These are the free DOF forces...not sure if F(posn) is correct
-				}
+		{	posp = posp-1;
+		nodes[i].ndof[j].pos=posp;
+		}
+		else
+		{	posf=posf+1;
+		nodes[i].ndof[j].pos=posf;
+		F(posf)=nodes[i].ndof[j].f;	//These are the free DOF forces...not sure if F(posn) is correct, -NN- changed to posf based on course notes, was showing an error
+		}
 		}
 	}
-	
+
 }
 
 void FEMSolver::setElementDofMap_ae()
@@ -321,57 +321,66 @@ bool FEMSolver::Solve_Dofs()
 
 void FEMSolver::Assign_dof()
 {
-	for(int i=0; i<nNodes; i++)
-	{	for (int j=0; j<ndofpn; j++)
-		{	if (nodes[i].ndof[j].p == false)
-			{	nodes[i].ndof[j].v = nodes[i].ndof[j].p;  //finishes the assignment of free DOF
-			}
-		}
-	}
-	/*Still requires the Phyelement step 8 to be carried out by completing SetElementDofMap_ae() before to loop over the element map
-	and complete edof by using the displacement values for the non-prescribed dofs.
+	PhyElement* pe;
+	for (int e = 0; e < ne; ++e)
+		pes[e]-> setElementDofMap_ae(ndofpn);
 	
-	Pseudo Code, complete once PhyElement is completed
+	/*for(int i=0; i<nNodes; i++)
+	{	for (int j=0; j<ndofpn; j++)
+	{	if (nodes[i].ndof[j].p == false)
+	{	nodes[i].ndof[j].v = nodes[i].ndof[j].p;  //finishes the assignment of free DOF
+	}
+	}
+	}
+	Still requires the Phyelement step 8 to be carried out by completing SetElementDofMap_ae() before to loop over the element map
+	and complete edof by using the displacement values for the non-prescribed dofs.
+
+	//Pseudo Code, doesn't quite work right but I had trouble fixing it
 	for (int e=0; e<ne; e++)
 	{	for (int i=0; i<element(e).nedof; i++)
-		{	posn = element(e)dofMap(i)
+	{		posn = element(e)*dofMap(i);
+			
 			if (posn > 0)  //Free dof
-			{
-				element(e).edofs(i) = dofs(posn);
-			}
-		}
+	{
+			element(e).edofs(i) = dofs(posn);
 	}
-	*/
+	}
+	}*/
+	
 }	
 
 void FEMSolver::UpdateFpNodalPrescribedForces()
 {
-	/* Requires completion of PhyElement to obtain the local forces (fe) values.
+	PhyElement* pe;
+	for (int e = 0; e < nNodes; ++e)
+		pes[e]-> UpdateElementForces_GlobalFp(F);
+
+	/*Requires completion of PhyElement to obtain the local forces (fe) values.
 	Pseudo code: read through the DOF map of the element and stop on prescribed values (negative).
-			Then we add all the prescribed values such that they are in a vector Fp of length np.
-			
+	Then we add all the prescribed values such that they are in a vector Fp of length np.
+
 	for (int e=0; e<ne; e++)
 	{	fee = feo;
-		for ( int i=0; i<nedof; i++)
-		{	I = dofMap(i);
-			if (I < 0)  //Prescribed
-			{	for (int j=0; j<nedof; j++)
-				{	fee(i)=fee(i)-ke(i,j)*edofs(j);
-				}
-			Fp(-I)=Fp(-I)-fee(i)
-			}
-		}
+	for ( int i=0; i<nedof; i++)
+	{	I = dofMap(i);
+	if (I < 0)  //Prescribed
+	{	for (int j=0; j<nedof; j++)
+	{	fee(i)=fee(i)-ke(i,j)*edofs(j);
 	}
-	
-	Updateing prescribed dof forces
-	
+	Fp(-I)=Fp(-I)-fee(i);
+	}
+	}
+	}
+
+	//Updating prescribed dof forces
+
 	for (int i=0; i<nNodes; i++)
 	{	for (int j=0; j<ndofpn; j++)
-		{	if (nodes[i].ndof[j]==true)
-			{	nodes[i].ndof[j].f=Fp[-nodes[i].ndof[j]];
-			}
-		}
+	{	if (nodes[i].ndof[j]==true)
+	{	nodes[i].ndof[j].f=Fp[-nodes[i].ndof[j]];
 	}
-	*/
+	}
+	}*/
 	
+
 }

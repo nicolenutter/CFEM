@@ -1,7 +1,7 @@
 #include "PhyElement.h"
 #include "PhyElementBar.h"
-#include "PhyElementFrame.h"
 #include "PhyElementTruss.h"
+#include "PhyElementFrame.h" //CC
 #include "PhyNode.h"
 #include "PhyDof.h"
 #include "CFEMTypes_Global.h"
@@ -18,12 +18,12 @@ PhyElement* PhyElementFactory(ElementType eTypeIn)
 	case etBar:
 		pePtr = new PhyElementBar();
 		break;
-	case etFrame:
-		pePtr = new PhyElementFrame();
-		break;
 	case etTruss:
 		pePtr = new PhyElementTruss();
 		break;
+	case etFrame: //CC	
+		pePtr = new PhyElementFrame(); //CC
+		break; //CC
 	default:
 		THROW("the type is not defined");
 	}
@@ -57,23 +57,69 @@ void PhyElement::setNodeConnectivity_Sizes(int nNodeInElement, int ndofpnIn, vec
 	eNodePtrs = eNodePtrsIn;
 	// resizing members in PhyElement
 
+	ndofpn = ndofpnIn;
+
 	// Complete
-	//...
 }
 
 
 void PhyElement::setElementDofMap_ae(int ndofpn)
 {
-	// Complete
-}
+	edofs.resize(nedof);
+	int gn;
+	for (int jj = 0; jj < neNodes; jj++)
+	{
+		gn = eNodes[jj]; // global node number for element node en
+
+		for (int kk = 0; kk < ndofpn; kk++)
+		{
+			if (eNodes[jj].pos == true)
+			{
+				edofs(kk) -> eNodes[jj].v;
+			}
+			eNodes[jj].v -> dofMap[kk];
+		}
+	}
+} // Doesn't work but it's an attempt to recreate the psuedocode and make it run in C++
 
 
 void PhyElement::AssembleStiffnessForce(MATRIX& globalK, VECTOR& globalF)
 {
-	// Complete
+	// fde = ke*ae, fr = 0, fn = 0
+	// free columns are used for k assembly but prescribed columns not needed
+	MATRIX K;
+	for (int ii = 0; ii < nedof; ii++)
+	{
+		double I = dofMap[ii];
+		if (I < 0)
+		{
+			continue;
+		}
+		else
+		{
+			I = foe(ii);
+		}
+		for (int jj = 0; jj < nedof; jj++)
+		{
+			double J = dofMap[jj];
+			if (J < 0)
+			{
+				continue;
+			}
+			else
+			{
+				J = foe(jj);
+				K(ii, jj) += ke(ii, jj);
+				fde(ii) += ke(ii, jj)*edofs(jj);
+			}
+		}
+		fee(ii) = foe(ii) - fde(ii);		
+	}
 }
 
 void PhyElement::UpdateElementForces_GlobalFp(VECTOR& Fp)
 {
-	// Complete
+	for (int ii = 0; ii < nedof; ++ii)
+		Fp(ii) += fee(ii);
+
 }
