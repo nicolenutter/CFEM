@@ -346,5 +346,32 @@ void FEMSolver::Assign_dof()
 
 void FEMSolver::UpdateFpNodalPrescribedForces()
 {
-	// Complete
+	/* Requires completion of PhyElement to obtain the local forces (fe) values.
+	Pseudo code: read through the DOF map of the element and stop on prescribed values (negative).
+			Then we add all the prescribed values such that they are in a vector Fp of length np.
+			
+	for (int e=0; e<ne; e++)
+	{	fee = feo;
+		for ( int i=0; i<nedof; i++)
+		{	I = dofMap(i);
+			if (I < 0)  //Prescribed
+			{	for (int j=0; j<nedof; j++)
+				{	fee(i)=fee(i)-ke(i,j)*edofs(j);
+				}
+			Fp(-I)=Fp(-I)-fee(i)
+			}
+		}
+	}
+	
+	Updateing prescribed dof forces
+	
+	for (int i=0; i<nNodes; i++)
+	{	for (int j=0; j<ndofpn; j++)
+		{	if (nodes[i].ndof[j]==true)
+			{	nodes[i].ndof[j].f=Fp[-nodes[i].ndof[j]];
+			}
+		}
+	}
+	*/
+	
 }
