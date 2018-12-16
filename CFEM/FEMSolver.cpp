@@ -247,8 +247,15 @@ void FEMSolver::FEMSolve(string& runName, bool verboseIn)
 
 void FEMSolver::setSizes()
 {
-	// Complete
-	
+	// Initializes dofs, K, and F by setting the sizes and all values to 0
+	int n = ndofpn*nNodes;
+	int nf = n - np;
+	K.resize(np,nf);
+	K=0.0;
+	dofs.resize(nf);
+	dofs=0.0;
+	F.resize(np);
+	F=0.0;
 }
 
 void FEMSolver::setPositions_F()
